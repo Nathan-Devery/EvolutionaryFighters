@@ -73,7 +73,7 @@ class FightingFitness{
 
     static async testIndividual(individual, enemy, ground, engine, updatesPerSecond){
         //const TIMEOUT_DURATION = 11000;
-        const TIMEOUT_DURATION = 20000;
+        const TIMEOUT_DURATION = 25000;
         const proportionateTimout = (TIMEOUT_DURATION * 60) / updatesPerSecond;
 
         let promise = new Promise((resolve, reject) => {

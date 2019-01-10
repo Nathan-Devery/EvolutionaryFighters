@@ -1,4 +1,5 @@
 import Matter from 'matter-js';
+window.decomp = require('poly-decomp');
 
 class FightingRobotCreator{
     static genomeLength(){
@@ -11,7 +12,7 @@ class FightingRobotCreator{
         const MAX_WIDTH_SCALE = 3;
         const MAX_SPIKE_HEIGHT_SCALE = 3;
         const MAX_WHEEL_SIZE = MAX_HEIGHT/2;
-        const WHEEL_TORQUE = 5;
+        const WHEEL_TORQUE = 3;
         const MIN_WHEEL_SIZE = 20;
 
         var Bodies = Matter.Bodies,

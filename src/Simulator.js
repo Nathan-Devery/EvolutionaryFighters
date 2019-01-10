@@ -12,14 +12,14 @@ class Simulator{
         // create engine
         this.engine = Engine.create();
 
-        this. engine.timing.timeScale = 1;
+        this.engine.timing.timeScale = 1;
 
-        var windowWidth = 1280,
-            windowHeight = 600;
+        var windowWidth = window.innerWidth * 0.987,    //The simulation width is too wide?
+            windowHeight = Math.floor(window.innerHeight * 0.66);   //Not 0.66 to avoid scroll down
 
         // create renderer
         this.render = Render.create({
-            element: document.body,
+            element: document.getElementById("simulation"),
             engine: this.engine,
             options: {
                 width: windowWidth,
@@ -27,7 +27,9 @@ class Simulator{
                 //wireframes: false     this must b false to use colours
             }
         });
-        
+
+        Render.setPixelRatio(this.render, 'auto')
+
         Render.run(this.render);
     }
 

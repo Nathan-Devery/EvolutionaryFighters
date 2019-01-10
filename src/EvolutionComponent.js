@@ -5,6 +5,9 @@ import Simulator from './Simulator';
 import FightingFitness from './FightingFitness';
 import RouletteSelector from './RouletteSelector';
 import TournamentSelector from './RouletteSelector';
+import Dashboard from './Dash/Dashboard';
+
+import Menu from './Menu';
 
 class EvolutionComponent extends Component{
     constructor(props){
@@ -14,33 +17,20 @@ class EvolutionComponent extends Component{
             fitnessScores : [],
             currentFittest : null,
             currentGeneration : 0,
-            updatesPerSecond: 300,
+            updatesPerSecond: 300    //second is real time
         }
-        //this.simulator = Simulator.run();
+        /*
         this.simulator = new Simulator();
         this.simulator.runAtSpeed(this.state.updatesPerSecond);
 
         this.run(10, 10, FightingRobotCreator, FightingFitness, RouletteSelector, 0.05);
+        */
+
         //this.run(10, 20, FightingRobotCreator, FightingFitness, TournamentSelector, 0.05);
     }
 
     //generations
     async run(generations, populationSize, robotCreator, fitnessF, selectionF, mutationRate){
-        /*
-        var population = EvolutionUtilities.generatePopulation(populationSize, robotCreator.genomeLength());
-        var fitnessScores = fitnessF.evaluatePopulationFitness(this.simulator, FightingRobotCreator, population);
-        
-        let pop = [[0,1,2,3,4], [5,6,7,8,9], [-1,-2,-3,-4,-5], [-6,-7,-8,-9,-10]];
-        pop = EvolutionUtilities.crossoverPopulation(pop);
-
-        console.log(pop);
-        */
-
-        //var population = EvolutionUtilities.generatePopulation(populationSize, robotCreator.genomeLength());
-        //var fitnessScores = fitnessF.evaluatePopulationFitness(this.simulator, FightingRobotCreator, population);
-        //console.log(await fitnessScores);
-
-        
         var population = EvolutionUtilities.generatePopulation(populationSize, robotCreator.genomeLength());
         for(let i = 0; i < generations; i++){
             var fitnessScores = await fitnessF.evaluatePopulationFitness(this.simulator, this.state.updatesPerSecond, FightingRobotCreator, population),
@@ -60,23 +50,28 @@ class EvolutionComponent extends Component{
                 console.log("fitness: " + fitnessScores[j]);
                 console.log("");
             }
-            
+
         }
-        
+    }
 
-        /*
-        let fitnessScores = [1,-2,-3,-4];
-        let pop = [[0,1,2,3,4], [5,6,7,8,9], [-1,-2,-3,-4,-5], [-6,-7,-8,-9,-10]];
-
-        let selected = RouletteSelector.selectPopulation(pop, fitnessScores);
-        console.log(selected);
-       */
-
+    componentDidMount() {
+        this.simulator = new Simulator();
+        this.simulator.runAtSpeed(this.state.updatesPerSecond);
+        this.run(10, 10, FightingRobotCreator, FightingFitness, RouletteSelector, 0.05);
     }
 
     render(){
-        return false;   //false to stop component rendering
+        const simStyle = {
+            backgroundColor: "#eeeeee"
+        }
+        return (
+            <div>
+                <div id="simulation" style={simStyle}></div>
+                <Dashboard/>
+            </div>
+        )
     }
+    //<Dashboard/>
 
 }
 
