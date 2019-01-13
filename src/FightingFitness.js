@@ -5,9 +5,7 @@ import EvolutionUtilities from './EvolutionUtilities';
 
 class FightingFitness{
 
-    static async evaluatePopulationFitness(simulator, updatesPerSecond, robotCreator, population){
-        const ENEMIES_TEST_AGAINST = 5;    //Prob make a changeable parameter
-
+    static async evaluatePopulationFitness(simulator, robotCreator, population, randomize, poolSize){
         simulator.clear();
 
         var windowWidth = simulator.render.bounds.max.x,
@@ -24,20 +22,29 @@ class FightingFitness{
         
         var fitnessScores = [];
         for(let i = 0; i < population.length; i++){
-            var enemyIndex = this.generateEnemyIndex(i, population.length, ENEMIES_TEST_AGAINST);
+            var enemyIndex = this.generateEnemyIndex(i, population.length, poolSize);
             var individualFitness = 0;
             for(let j = 0; j < enemyIndex.length; j++){
                 let individual = robotCreator.create(individualX, y, population[i], false, "individualBody");
                 
+                let enemy;
+                if(randomize){
+                    let enemyGenome = EvolutionUtilities.generateIndividual(population[0].length);
+                    enemy = robotCreator.create(enemyX, y, enemyGenome, true, "enemyBody");
+                }else{
+                    enemy = robotPopulation[enemyIndex[j]];
+                }
                 //let enemy = robotPopulation[enemyIndex[j]];
 
                 //randomized enemy, this makes some surrounding code redundant
+                /*
                 let enemyGenome = EvolutionUtilities.generateIndividual(population[0].length);
                 let enemy = robotCreator.create(enemyX, y, enemyGenome, true, "enemyBody");
+                */
 
                 Matter.World.add(world, [individual.robot, enemy.robot]);
 
-                let promise = this.testIndividual(individual, enemy, ground, simulator.engine, updatesPerSecond);
+                let promise = this.testIndividual(individual, enemy, ground, simulator.engine, simulator.updatesPerSecond);
                 let matchFitness = await promise;
                 individualFitness += matchFitness;
                 Matter.World.remove(world, [individual.robot, enemy.robot])
@@ -132,7 +139,7 @@ class FightingFitness{
         for(let i = 0; i < numEnemies; i++){
             var index = individualIndex;
             while(index === individualIndex){    //Makes sure the individual doesnt fight itself
-                    index = Math.floor(Math.random() * (max - min + 1)) + min;
+                index = Math.floor(Math.random() * (max - min + 1)) + min;
             }
             enemyIndex[i] = index;
         }

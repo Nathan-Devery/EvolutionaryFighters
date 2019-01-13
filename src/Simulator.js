@@ -2,6 +2,8 @@ import Matter from 'matter-js';
 
 class Simulator{
     constructor(){
+        this.SLOW_UPDATES_SECOND = 60;
+        this.FAST_UPDATES_SECOND = 300;
         this.initialize();
     }
 
@@ -33,7 +35,9 @@ class Simulator{
         Render.run(this.render);
     }
 
-    runAtSpeed(updatesPerSecond){
+    run(fast){
+        this.updatesPerSecond = fast ? this.FAST_UPDATES_SECOND : this.SLOW_UPDATES_SECOND;
+
         if(!(this.intervalID == null)){
             clearInterval(this.intervalID);
         }
@@ -41,8 +45,15 @@ class Simulator{
         var engine = this.engine;
         this.intervalID = setInterval(function() {
             Matter.Engine.update(engine, 1000 / 60);
-        }, 1000 / updatesPerSecond);
+        }, 1000 / this.updatesPerSecond);
     }
+    
+    /*
+    changeSpeed(fast){
+        this.updatesPerSecond = fast ? this.FAST_UPDATES_SECOND : this.SLOW_UPDATES_SECOND;
+        this.run();
+    }
+    */
 
     clear(){
         let engine = this.engine;

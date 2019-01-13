@@ -31,11 +31,16 @@ class Dashboard extends Component{
         return (
             //<Controls/>
             //<div align="center">  avoided excessive center align
+
             <div>
                 <Grid container spacing={8} style={gridStyle} >
                     <Grid item xs={12} md={4}>
                         <Paper>
-                            <Controls/>
+                            <Controls 
+                                handleRun={this.props.handleRun}
+                                handleSpeed={this.props.handleSpeed}
+                                speed={this.props.speed}
+                            />
                         </Paper>
                         <Paper style={additionalPanelStyle}>
                             <Exhibitor/>

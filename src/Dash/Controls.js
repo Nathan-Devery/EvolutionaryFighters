@@ -10,6 +10,8 @@ import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
 import FormHelperText from '@material-ui/core/FormHelperText';
+import RouletteSelector from '../RouletteSelector';
+import TournamentSelector from '../RouletteSelector';
 
 class Controls extends Component{
     constructor(props){
@@ -17,34 +19,33 @@ class Controls extends Component{
         this.state = {
             populationSize: 20,
             generations: 10,
+            poolSize: 5,
             mutationRate: 5,
-            speed: 60}
-
-        this.handleChangePop = this.handleChangePop.bind(this);
-        this.handleChangeGen = this.handleChangeGen.bind(this);
-        this.handleChangeMut = this.handleChangeMut.bind(this);
+            randomize: true,
+            selector: 0,
+        }
         this.handleChangeSpeed = this.handleChangeSpeed.bind(this);
         this.handleRun = this.handleRun.bind(this);
     }
 
-    handleChangePop(e){
-        this.setState({populationSize: e.target.value});
-    }
-
-    handleChangeGen(e){
-        this.setState({generations: e.target.value});
-    }
-
-    handleChangeMut(e){
-        this.setState({mutationRate: e.target.value});
-    }
-
     handleChangeSpeed(e){
-        this.setState({speed: e.target.value});
+        //console.log(e.target.checked);
+        this.props.handleSpeed();
     }
 
     handleRun(e){
-        console.log("hi");
+        //async run(generations, populationSize, robotCreator, selectionF, mutationRate, randomize, poolSize){
+        let selection = this.state.selector == 0 ? RouletteSelector : TournamentSelector;
+
+        let runArgs = {
+            generations: this.state.generations,
+            populationSize: this.state.populationSize,
+            randomize: this.state.randomize,
+            selection: selection,
+            mutationRate: this.state.mutationRate,
+            poolSize : this.state.poolSize,
+        }
+        this.props.handleRun(runArgs)
     }
 
     render(){
@@ -60,6 +61,8 @@ class Controls extends Component{
                         <TextField
                             id="standard-number"
                             label="Pop Size"
+                            value={this.state.populationSize}
+                            onChange={(e) => this.setState({populationSize: e.target.value})}
                             type="number"
                             InputLabelProps={{
                                 shrink: true,
@@ -70,6 +73,8 @@ class Controls extends Component{
                         <TextField
                             id="standard-number"
                             label="Generations"
+                            value={this.state.generations}
+                            onChange={(e) => this.setState({generations: e.target.value})}
                             type="number"
                             InputLabelProps={{
                                 shrink: true,
@@ -80,6 +85,8 @@ class Controls extends Component{
                         <TextField
                             id="standard-number"
                             label="Mutate Rate"
+                            value={this.state.mutationRate}
+                            onChange={(e) => this.setState({mutationRate: e.target.value})}
                             type="number"
                             InputLabelProps={{
                                 shrink: true,
@@ -90,6 +97,8 @@ class Controls extends Component{
                         <TextField
                             id="standard-number"
                             label="Pool Size"
+                            value={this.state.poolSize}
+                            onChange={(e) => this.setState({poolSize: e.target.value})}
                             type="number"
                             InputLabelProps={{
                                 shrink: true,
@@ -98,21 +107,17 @@ class Controls extends Component{
                     </Grid>
                     <Grid item xs={4}>
                         <FormControl>
-                            <InputLabel htmlFor="age-simple">Enemies</InputLabel>
+                            <InputLabel>Enemies</InputLabel>
                             <Select
-                                value={"hi"}
-                                onChange={(e) => { }}
+                                value={this.state.randomize}
+                                onChange={(e) => {this.setState({randomize: e.target.value})}}
                                 inputProps={{
                                     name: 'age',
                                     id: 'age-simple',
                                 }}
                             >
-                                <MenuItem value="">
-                                    <em>None</em>
-                                </MenuItem>
-                                <MenuItem value={10}>Ten</MenuItem>
-                                <MenuItem value={20}>Twenty</MenuItem>
-                                <MenuItem value={30}>Thirty</MenuItem>
+                                <MenuItem value={true}>Random</MenuItem>
+                                <MenuItem value={false}>Population</MenuItem>
                             </Select>
                         </FormControl>
                     </Grid>
@@ -120,35 +125,29 @@ class Controls extends Component{
                         <FormControl>
                             <InputLabel htmlFor="age-helper">Selection</InputLabel>
                             <Select
-                                value={3}
-                                onChange={() => { }}
+                                value= {this.state.selector}
+                                onChange={(e) => {this.setState({selector: e.target.value})}}
                             >
-                                <MenuItem value="">
-                                    <em>None</em>
-                                </MenuItem>
-                                <MenuItem value={10}>Ten</MenuItem>
-                                <MenuItem value={20}>Twenty</MenuItem>
-                                <MenuItem value={30}>Thirty</MenuItem>
+                                <MenuItem value={0}>Roulette</MenuItem>
+                                <MenuItem value={1}>Tournament</MenuItem>
                             </Select>
                         </FormControl>
+                    </Grid>
+                    <Grid item xs={4}>
                     </Grid>
                     <Grid item xs={4}>
                         <FormControlLabel
                             control={
                                 <Switch
-                                    checked={false}
-
-                                    value="checkedA"
+                                    checked={this.props.speed}
+                                    onChange={this.handleChangeSpeed}
                                 />
                             }
                             label="Fast"
                         />
                     </Grid>
                     <Grid item xs={4}>
-                        <Button onClick={this.handleRun} variant="contained" color="primary" size="small">Run</Button>
-                    </Grid>
-                    <Grid item xs={4}>
-                        <Button onClick={this.handleRun} variant="contained" color="secondary" size="small">Pause</Button>
+                    <Button onClick={this.handleRun} variant="contained" color="primary" size="small">Run</Button>
                     </Grid>
                 </Grid>
             </div>
