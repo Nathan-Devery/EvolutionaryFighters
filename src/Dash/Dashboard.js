@@ -5,6 +5,8 @@ import Controls from './Controls';
 import EnhancedTable from './EnhancedTable';
 import Plot from './Plot';
 import Exhibitor from './Exhibitor';
+import ReactVirtualizedTable from './ReactVirtualizedTable';
+import SimpleTable from './SimpleTable';
 
 class Dashboard extends Component{
     constructor(props){
@@ -14,47 +16,40 @@ class Dashboard extends Component{
     render(){
         const gridStyle = {
             margin: "0px",
-            padding: "3px",
+            padding: "4px",
             paddingTop: "0px",
-            backgroundColor: "#eeeeee",
-            width: "100%"
-        };
-
-        const additionalPanelStyle = {
-            marginTop: "8px",
+            width: "100%",
+            backgroundColor: "#eeeeee"   
         };
 
         const panelStyle = {
-            height: "500px"
+            height: "100%"
         };
         
         return (
             //<Controls/>
             //<div align="center">  avoided excessive center align
 
+            //<ReactVirtualizedTable/>
             <div>
                 <Grid container spacing={8} style={gridStyle} >
                     <Grid item xs={12} md={4}>
-                        <Paper>
+                        <Paper style={panelStyle}>
                             <Controls 
                                 handleRun={this.props.handleRun}
                                 handleSpeed={this.props.handleSpeed}
                                 speed={this.props.speed}
                             />
-                        </Paper>
-                        <Paper style={additionalPanelStyle}>
-                            <Exhibitor/>
+                            <Exhibitor handleExhibit={this.props.handleExhibit}/>
                         </Paper>
                     </Grid>
-                    <Grid item xs={12} md={4}>
+                    <Grid item xs={12} md={8}>
                         <Paper>
-                            <EnhancedTable/>
+                            <SimpleTable 
+                                populations={this.props.populations}
+                                fitnessScores={this.props.fitnessScores}
+                            />
                         </Paper>
-                    </Grid>
-                    <Grid item xs={12} md={4}>
-                        <Paper>
-                            <Plot style={panelStyle}/>
-                        </Paper> 
                     </Grid>
                 </Grid>
             </div>
@@ -63,3 +58,12 @@ class Dashboard extends Component{
 }
 
 export default Dashboard;
+
+
+/*
+<Grid item xs={12} md={4}>
+                        <Paper style={panelStyle}>
+                            <Plot fitnessScores={this.props.fitnessScores}/>
+                        </Paper> 
+                    </Grid>
+*/

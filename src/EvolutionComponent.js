@@ -14,56 +14,71 @@ class EvolutionComponent extends Component{
     constructor(props){
         super(props);
         this.state = {
-            population : [[]],
-            fitnessScores : [],
-            currentFittest : null,
-            currentGeneration : 0,
+            populations : [[]],
+            fitnessScores : [[]],
             error: false,
             errorMsg: "hi",
             speed: true,
         }
+        this.robotCreator = FightingRobotCreator;
 
         this.error = this.error.bind(this);
         this.run = this.run.bind(this);
         this.handleRun = this.handleRun.bind(this);
         this.error = this.error.bind(this);
-
-        /*
-        this.simulator = new Simulator();
-        this.simulator.runAtSpeed(this.state.updatesPerSecond);
-
-        this.run(10, 10, FightingRobotCreator, FightingFitness, RouletteSelector, 0.05);
-        */
-
-        //this.run(10, 20, FightingRobotCreator, FightingFitness, TournamentSelector, 0.05);
+        this.handleExhibit = this.handleExhibit.bind(this);
     }
 
-    //generations
-    async run(generations, populationSize, robotCreator, selectionF, mutationRate, randomize, poolSize){
-        var population = EvolutionUtilities.generatePopulation(populationSize, robotCreator.genomeLength());
+    async run(generations, populationSize, selectionF, mutationRate, randomize, poolSize){
+        var population = EvolutionUtilities.generatePopulation(populationSize, this.robotCreator.genomeLength());
+   
         for(let i = 0; i < generations; i++){
-            var fitnessScores = await FightingFitness.evaluatePopulationFitness(this.simulator, FightingRobotCreator, population, randomize, poolSize),
-                population = selectionF.selectPopulation(population, fitnessScores),
-                offSpring = EvolutionUtilities.crossoverPopulation(population);
+            this.fitnessFunction.setPopulation(population);
+            for(let j = 0; j < population.length; j++){
+                let fitnessScore = await this.fitnessFunction.evaluateIndividual(population[j], j, randomize, poolSize);
+                if(fitnessScore === null) return;
 
+                this.setState((state, props) => {
+                    let clonedPops = state.populations.slice(0);
+                    let clonedFitness = state.fitnessScores.slice(0);
+                    if(typeof clonedPops[i] === 'undefined'){
+                        clonedPops.push([population[j]]);
+                        clonedFitness.push([fitnessScore]);
+                    }else{
+                        clonedPops[i] = clonedPops[i].concat([population[j]]);
+                        clonedFitness[i].push(fitnessScore);    
+                    }
+                    return ({
+                        populations: clonedPops,
+                        fitnessScores: clonedFitness
+                    })
+                });
+            }
+            population = selectionF.selectPopulation(this.state.populations[i], this.state.fitnessScores[i]);
+            let offSpring = EvolutionUtilities.crossoverPopulation(population);
+            console.log("offspring");
+            console.log(offSpring);
             offSpring = EvolutionUtilities.mutate(offSpring, mutationRate);
-            //population = population.concat(offSpring);
+            console.log("mutated");
+            console.log(offSpring);
             population = offSpring;
 
-            console.log("Generation:" + i);
-            console.log(fitnessScores);
-            for(let j = 0; j < population.length; j++){
-                console.log("")
-                console.log("individual" + j + ": " + population[j]);
-                console.log("fitness: " + fitnessScores[j]);
-                console.log("");
-            }
+            console.log(i);
         }
+        //console.log(this.state.populations);
+        //console.log(this.state.fitnessScores);
+    }
+    
+    async handleExhibit(genome){
+        this.clearRun(false);
+        console.log(genome);
+        await this.fitnessFunction.evaluateIndividual(genome, 0, true, 5);
     }
 
     componentDidMount() {
-        this.simulator = new Simulator();
+        this.simulator = new Simulator(); 
         this.simulator.run(this.state.speed);
+        this.fitnessFunction = new FightingFitness(this.simulator, this.robotCreator); 
         //this.run(4, 3, FightingRobotCreator, RouletteSelector, 0.05, true, 5);
     }
 
@@ -71,29 +86,33 @@ class EvolutionComponent extends Component{
         this.setState({error: true, errorMsg: msg});
     }
 
-    /*
-            populationSize: 20,
-            generations: 10,
-            poolSize: 5,
-            mutationRate: 5,
-            randomized: true,
-            selector: 1,
-    */
     handleRun(runArgs){
-        this.run(runArgs.generations, runArgs.populationSize, FightingRobotCreator, runArgs.selection, 
+        this.clearRun(true);
+        this.run(runArgs.generations, runArgs.populationSize, runArgs.selection, 
             runArgs.mutationRate, runArgs.randomize, runArgs.poolSize);
-
-        //async run(generations, populationSize, robotCreator, selectionF, mutationRate, randomize, poolSize){
     }
 
-    render(){        
+    clearRun(clearPop){
+        this.fitnessFunction.stop = true;
+        this.fitnessFunction = new FightingFitness(this.simulator, this.robotCreator); 
+        if(clearPop){
+            this.setState({
+                populations : [[]],
+                fitnessScores : [[]],
+            })
+        }
+    }
+
+    render(){
         const simStyle = {
-            backgroundColor: "#eeeeee"
+            backgroundColor: "#eeeeee",
         }
         return (
             <div>
                 <div id="simulation" style={simStyle}></div>
                 <Dashboard 
+                    populations={this.state.populations}
+                    fitnessScores={this.state.fitnessScores}
                     speed={this.state.speed}
                     handleRun={this.handleRun}
                     handleSpeed={() => {
@@ -103,6 +122,7 @@ class EvolutionComponent extends Component{
                             }));
                         }
                     }
+                    handleExhibit={this.handleExhibit}
                 />
                 {this.state.error &&
                     <ErrorDisplay display={this.state.error} msg={this.state.errorMsg} 
@@ -111,8 +131,6 @@ class EvolutionComponent extends Component{
             </div>
         )
     }
-    //<Dashboard/>
-
 }
 
 export default EvolutionComponent; 

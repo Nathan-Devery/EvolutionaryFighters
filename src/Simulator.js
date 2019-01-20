@@ -2,8 +2,8 @@ import Matter from 'matter-js';
 
 class Simulator{
     constructor(){
-        this.SLOW_UPDATES_SECOND = 60;
-        this.FAST_UPDATES_SECOND = 300;
+        this.SLOW_UPDATES_SECOND = 80;
+        this.FAST_UPDATES_SECOND = 500;
         this.initialize();
     }
 
@@ -16,7 +16,8 @@ class Simulator{
 
         this.engine.timing.timeScale = 1;
 
-        var windowWidth = window.innerWidth * 0.987,    //The simulation width is too wide?
+        //* 0.987
+        var windowWidth = window.innerWidth,
             windowHeight = Math.floor(window.innerHeight * 0.66);   //Not 0.66 to avoid scroll down
 
         // create renderer
@@ -30,7 +31,7 @@ class Simulator{
             }
         });
 
-        Render.setPixelRatio(this.render, 'auto')
+        //Render.setPixelRatio(this.render, 'auto') detailed but slow
 
         Render.run(this.render);
     }

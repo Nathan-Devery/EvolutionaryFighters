@@ -12,6 +12,22 @@ import InputLabel from '@material-ui/core/InputLabel';
 class Exhibitor extends Component{
     constructor(props){
         super(props);
+        this.handlePress = this.handlePress.bind(this);
+        this.handleTextChange = this.handleTextChange.bind(this);
+        this.state = {
+            genome: ""
+        }
+    }
+
+    handlePress(){
+        let genome = this.state.genome.split(',').map(function(item) {
+            return parseFloat(item);
+        });
+        this.props.handleExhibit(genome);
+    }
+
+    handleTextChange(e){
+        this.setState({genome: e.target.value})
     }
 
     render(){
@@ -32,7 +48,8 @@ class Exhibitor extends Component{
                             id="standard-number"
                             label="Genome"
                             type="number"
-                            value="0.6055879831647537,0.3268454720424363,0.3305674482389127,-0.21336530285438804,0.3208531250348077,-0.37323782072628764,-0.48180249676787623,0.24433340742356702,0.46102817709591726,0.8392965158885508,-0.08410862957851495,-0.06398418575868314,-0.3755416909248195"	
+                            value={this.state.textValue}
+                            onChange={this.handleTextChange}
                             multiline={true}
                             InputLabelProps={{
                                 shrink: true,
@@ -44,7 +61,12 @@ class Exhibitor extends Component{
                     <Grid item xs={4}>
                     </Grid>
                     <Grid item xs={4}>
-                        <Button onClick={this.handleRun} variant="contained" color="primary" size="small">Exhibit</Button>
+                        <Button onClick={this.handlePress} 
+                            variant="contained" 
+                            color="primary" 
+                            size="small">
+                            Exhibit
+                        </Button>
                     </Grid>
                 </Grid>
             </div>

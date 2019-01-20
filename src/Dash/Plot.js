@@ -3,16 +3,108 @@ import Chart from 'chart.js'
 
 class Plot extends Component{
     constructor(props){
-        super(props);
+		super(props);
+		this.state = {
+			mounted: false
+		}
     }
 
     componentDidMount() {
-        //this.renderPlot();
-        this.renderPlot2();
-    }
+		//generations
+		//max gen values
+		//mean gen values
+		this.setState({
+			mounted: true
+		})
+	}
 
-    renderPlot2(){
-        var MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+	renderPlot(){
+		console.log("REDENDER")
+		let fitnessScores = this.props.fitnessScores,
+			labels = this.getLabels(fitnessScores),
+			maxGenValues = this.getMaxGenValues(fitnessScores);
+        this.renderPlot(labels, maxGenValues);
+	}
+
+	getLabels(fitnessScores){
+		let genLabels = [];
+		for(let i = 0; i < fitnessScores.length; i++){
+			genLabels[i] = i.toString();
+		}
+		return genLabels;
+	}
+
+	getMaxGenValues(fitnessScores){
+		let maxGenValues = [];
+		for(let i = 0; i < fitnessScores.length; i++){
+			let max = 0;
+			for(let j = 0; j < fitnessScores[i].length; j++){
+				max = fitnessScores[i][j] > max ? fitnessScores[i][j] : max;
+			}
+			maxGenValues[i] = max;
+		}
+		return maxGenValues;
+	}
+	
+	renderPlot(labels, maxGenValues){
+		var config = {
+			type: 'line',
+			data: {
+				labels: labels,
+				datasets: [{
+					label: 'Max Fitness',
+					backgroundColor: "#f50057",
+					borderColor: "#f50057",
+					data: maxGenValues,
+					fill: false,
+				}, {
+					label: 'Mean Fitness',
+					fill: false,
+					backgroundColor: "#3f51b5",
+					borderColor: "#3f51b5",
+					data: maxGenValues,
+				}]
+			},
+			options: {
+				responsive: true,
+				title: {
+					display: false,
+					text: 'Chart.js Line Chart'
+				},
+				tooltips: {
+					mode: 'index',
+					intersect: false,
+				},
+				hover: {
+					mode: 'nearest',
+					intersect: true
+				},
+				scales: {
+					xAxes: [{
+						display: true,
+						scaleLabel: {
+							display: true,
+							labelString: 'Generation'
+						}
+					}],
+					yAxes: [{
+						display: true,
+						scaleLabel: {
+							display: true,
+							labelString: 'Fitness'
+						}
+					}]
+				}
+			}
+		};
+
+        
+        var ctx = document.getElementById('myChart').getContext('2d');
+		new Chart(ctx, config);
+	}
+
+	/*
+    renderPlot(){
 		var config = {
 			type: 'line',
 			data: {
@@ -82,54 +174,17 @@ class Plot extends Component{
 
         
         var ctx = document.getElementById('myChart').getContext('2d');
-		var myChart = new Chart(ctx, config);
-    }
-
-    renderPlot(){
-        var ctx = document.getElementById("myChart");
-
-        var myChart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: ["0", "1", "2", "3", "4", "5"],
-                datasets: [{
-                    label: '# of Votes',
-                    data: [12, 19, 3, 5, 2, 3],
-                    backgroundColor: [
-                        'rgba(255, 99, 132, 0.2)',
-                        'rgba(54, 162, 235, 0.2)',
-                        'rgba(255, 206, 86, 0.2)',
-                        'rgba(75, 192, 192, 0.2)',
-                        'rgba(153, 102, 255, 0.2)',
-                        'rgba(255, 159, 64, 0.2)'
-                    ],
-                    borderColor: [
-                        'rgba(255,99,132,1)',
-                        'rgba(54, 162, 235, 1)',
-                        'rgba(255, 206, 86, 1)',
-                        'rgba(75, 192, 192, 1)',
-                        'rgba(153, 102, 255, 1)',
-                        'rgba(255, 159, 64, 1)'
-                    ],
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                scales: {
-                    yAxes: [{
-                        ticks: {
-                            beginAtZero:true
-                        }
-                    }]
-                }
-            }
-        });
-    }
+		new Chart(ctx, config);
+	}
+	*/
 
     render(){
-        const gridStyle = {
-            margin: "0px"
-        };
+		if(this.state.mounted){
+			let fitnessScores = this.props.fitnessScores,
+			labels = this.getLabels(fitnessScores),
+			maxGenValues = this.getMaxGenValues(fitnessScores);
+        	this.renderPlot(labels, maxGenValues);
+		}
         return <canvas id="myChart" width="100%" height="100%"></canvas>
     }
 }

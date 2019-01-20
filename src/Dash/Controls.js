@@ -21,8 +21,8 @@ class Controls extends Component{
             generations: 10,
             poolSize: 5,
             mutationRate: 5,
-            randomize: true,
-            selector: 0,
+            randomize: false,
+            selector: 1,
         }
         this.handleChangeSpeed = this.handleChangeSpeed.bind(this);
         this.handleRun = this.handleRun.bind(this);
@@ -35,14 +35,14 @@ class Controls extends Component{
 
     handleRun(e){
         //async run(generations, populationSize, robotCreator, selectionF, mutationRate, randomize, poolSize){
-        let selection = this.state.selector == 0 ? RouletteSelector : TournamentSelector;
+        let selection = this.state.selector === 0 ? RouletteSelector : TournamentSelector;
 
         let runArgs = {
             generations: this.state.generations,
             populationSize: this.state.populationSize,
             randomize: this.state.randomize,
             selection: selection,
-            mutationRate: this.state.mutationRate,
+            mutationRate: this.state.mutationRate / 100,    //mutate rate must be decimal
             poolSize : this.state.poolSize,
         }
         this.props.handleRun(runArgs)
@@ -52,11 +52,12 @@ class Controls extends Component{
         //padding avoids window movement when over selection fields 
         const style = {
             padding: "10px",
+            
         };
 
         return (
             <div style={style}>
-                <Grid container spacing={8}>
+                <Grid container spacing={8} >
                     <Grid item xs={4}>
                         <TextField
                             id="standard-number"

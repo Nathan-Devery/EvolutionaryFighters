@@ -4,60 +4,70 @@ import Simulator from './Simulator';
 import EvolutionUtilities from './EvolutionUtilities';
 
 class FightingFitness{
+    constructor(simulator, robotCreator){
+        this.stop = false;
 
-    static async evaluatePopulationFitness(simulator, robotCreator, population, randomize, poolSize){
-        simulator.clear();
+        this.simulator = simulator;
+        this.world = simulator.engine.world;
+        this.robotCreator = robotCreator;
 
-        var windowWidth = simulator.render.bounds.max.x,
-            windowHeight = simulator.render.bounds.max.y,
-            world = simulator.engine.world;
+        this.windowWidth = simulator.render.bounds.max.x;
+        this.windowHeight = simulator.render.bounds.max.y;
 
-        var individualX = windowWidth / 5,
-            enemyX = windowWidth - individualX,
-            y = windowHeight / 3;
-
-        var robotPopulation = this.generateRobotPopulation(population, robotCreator, enemyX, y);
-        
-        var ground = this.initializeMap(world, windowWidth, windowHeight);
-        
-        var fitnessScores = [];
-        for(let i = 0; i < population.length; i++){
-            var enemyIndex = this.generateEnemyIndex(i, population.length, poolSize);
-            var individualFitness = 0;
-            for(let j = 0; j < enemyIndex.length; j++){
-                let individual = robotCreator.create(individualX, y, population[i], false, "individualBody");
-                
-                let enemy;
-                if(randomize){
-                    let enemyGenome = EvolutionUtilities.generateIndividual(population[0].length);
-                    enemy = robotCreator.create(enemyX, y, enemyGenome, true, "enemyBody");
-                }else{
-                    enemy = robotPopulation[enemyIndex[j]];
-                }
-                //let enemy = robotPopulation[enemyIndex[j]];
-
-                //randomized enemy, this makes some surrounding code redundant
-                /*
-                let enemyGenome = EvolutionUtilities.generateIndividual(population[0].length);
-                let enemy = robotCreator.create(enemyX, y, enemyGenome, true, "enemyBody");
-                */
-
-                Matter.World.add(world, [individual.robot, enemy.robot]);
-
-                let promise = this.testIndividual(individual, enemy, ground, simulator.engine, simulator.updatesPerSecond);
-                let matchFitness = await promise;
-                individualFitness += matchFitness;
-                Matter.World.remove(world, [individual.robot, enemy.robot])
-                simulator.engine.events = {}; 
-                //reset enemy
-                robotPopulation[enemyIndex[j]] = robotCreator.create(enemyX, y, population[enemyIndex[j]], true, "enemyBody");      
-            }
-            fitnessScores[i] = individualFitness;
-        }
-       return fitnessScores;
+        this.individualX = this.windowWidth / 5;
+        this.enemyX = this.windowWidth - this.individualX;
+        this.y = this.windowHeight / 3;
     }
 
-    static generateRobotPopulation(population, robotCreator, x, y){
+    setPopulation(population){
+        this.population = population;
+        this.robotPopulation = this.generateRobotPopulation(population, 
+            this.robotCreator, this.enemyX, this.y);
+    }
+
+    async evaluateIndividual(individualGene, individualIndex, randomize, poolSize){
+        this.simulator.clear();
+        var ground = this.initializeMap(this.world, this.windowWidth, this.windowHeight);
+        
+        var enemyIndex;
+        if(!randomize){
+            enemyIndex = this.generateEnemyIndex(individualIndex, this.robotPopulation.length, poolSize);
+        }
+        var individualFitness = 0;
+
+        for(let j = 0; j < poolSize; j++){
+            if(this.stop){
+                return null;
+            }
+
+            let individual = this.robotCreator.create(this.individualX, this.y, individualGene, false, "individualBody");
+            
+            let enemy;
+            if(randomize){
+                let enemyGenome = EvolutionUtilities.generateIndividual(individualGene.length);
+                enemy = this.robotCreator.create(this.enemyX, this.y, enemyGenome, true, "enemyBody");
+            }else{
+                enemy = this.robotPopulation[enemyIndex[j]];
+            }
+
+            Matter.World.add(this.world, [individual.robot, enemy.robot]);
+
+            let promise = this.testIndividual(individual, enemy, ground, this.simulator.engine, this.simulator.updatesPerSecond);
+            let matchFitness = await promise;
+            if(matchFitness == null){
+                return null;
+            }
+
+            individualFitness += matchFitness;
+            Matter.World.remove(this.world, [individual.robot, enemy.robot])
+            this.simulator.engine.events = {}; 
+            //reset enemy
+            if(!randomize)this.robotPopulation[enemyIndex[j]] = this.robotCreator.create(this.enemyX, this.y, this.population[enemyIndex[j]], true, "enemyBody");      
+        }
+        return individualFitness;
+    }
+
+    generateRobotPopulation(population, robotCreator, x, y){
         var robotPopulation = [];
         for(let i = 0; i < population.length; i++){
             robotPopulation[i] = robotCreator.create(x, y, population[i], true, "enemyBody");
@@ -65,7 +75,7 @@ class FightingFitness{
         return robotPopulation;
     }
 
-    static initializeMap(world, windowWidth, windowHeight){
+    initializeMap(world, windowWidth, windowHeight){
         //ground just out of view
         var ground = Matter.Bodies.rectangle(0.5 * windowWidth, 1.5 * windowHeight, 
             10 * windowWidth, 0.05 * windowHeight, { isStatic: true, label: "ground"});
@@ -78,16 +88,23 @@ class FightingFitness{
         return ground;
     }
 
-    static async testIndividual(individual, enemy, ground, engine, updatesPerSecond){
+    async testIndividual(individual, enemy, ground, engine, updatesPerSecond){
         //const TIMEOUT_DURATION = 11000;
-        const TIMEOUT_DURATION = 25000;
+        const TIMEOUT_DURATION = 30000;
         const proportionateTimout = (TIMEOUT_DURATION * 60) / updatesPerSecond;
 
         let promise = new Promise((resolve, reject) => {
-            setTimeout(() => resolve(proportionateTimout), proportionateTimout)
-            //setTimeout(() => resolve(0), proportionateTimout)
+            //setTimeout(() => resolve(proportionateTimout), proportionateTimout)
+            setTimeout(() => resolve(0), proportionateTimout)
             var start = new Date().getTime();
+
+            let context = this;
             Matter.Events.on(engine, 'beforeUpdate', function(event) {
+                //console.log(context.stop);
+                if(context.stop) {
+                    resolve(null);
+                }
+                
                 individual.tickFunction();
                 enemy.tickFunction();
                 
@@ -107,8 +124,8 @@ class FightingFitness{
                         let fitness = -(time);
                         */
 
-                        let fitness = proportionateTimout - timeRemaining;
-                        //let fitness = 0;
+                        //let fitness = proportionateTimout - timeRemaining;
+                        let fitness = 0;
                         resolve(fitness);
                     }
                 }
@@ -122,8 +139,8 @@ class FightingFitness{
                         let fitness = proportionateTimout - time;
                         */
 
-                        let fitness = proportionateTimout + timeRemaining;
-                        //let fitness = 1;
+                        //let fitness = proportionateTimout + timeRemaining;
+                        let fitness = 1;
                         resolve(fitness);
                     }
                 }
@@ -132,7 +149,7 @@ class FightingFitness{
        return promise;
     }
 
-    static generateEnemyIndex(individualIndex, populationLength, numEnemies){
+    generateEnemyIndex(individualIndex, populationLength, numEnemies){
         var enemyIndex = [];
         var max = populationLength - 1;
         var min = 0;
