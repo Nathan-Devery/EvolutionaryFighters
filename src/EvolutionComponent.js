@@ -25,11 +25,14 @@ class EvolutionComponent extends Component{
         this.error = this.error.bind(this);
         this.run = this.run.bind(this);
         this.handleRun = this.handleRun.bind(this);
-        this.error = this.error.bind(this);
         this.handleExhibit = this.handleExhibit.bind(this);
     }
 
     async run(generations, populationSize, selectionF, mutationRate, randomize, poolSize){
+        if(!this.validRunInput(generations, populationSize, mutationRate, poolSize)) return;
+
+        this.clearRun(true);
+
         var population = EvolutionUtilities.generatePopulation(populationSize, this.robotCreator.genomeLength());
    
         for(let i = 0; i < generations; i++){
@@ -65,11 +68,32 @@ class EvolutionComponent extends Component{
 
             console.log(i);
         }
-        //console.log(this.state.populations);
-        //console.log(this.state.fitnessScores);
     }
     
+    validRunInput(generations, populationSize, mutationRate, poolSize){
+        let errorMsg = "";
+        if(generations < 0 || populationSize < 0 || mutationRate < 0){
+            errorMsg += "Inputs must be greater than 0 \n";
+        }
+        if(!(populationSize % 2 == 0)){
+            errorMsg += "Population size must be divisible by 2";
+        }
+        if(poolSize < 1){
+            errorMsg += "Pool size must be greater than >=1";
+        }
+
+        if(!(errorMsg === "")) {
+            this.error(errorMsg);
+            return false;
+        }
+        return true;
+    }
+
     async handleExhibit(genome){
+        if(genome === 'undefined' || genome.length != this.robotCreator.genomeLength()){
+            this.error("Invalid genome");
+            return;
+        }
         this.clearRun(false);
         console.log(genome);
         await this.fitnessFunction.evaluateIndividual(genome, 0, true, 5);
@@ -87,7 +111,6 @@ class EvolutionComponent extends Component{
     }
 
     handleRun(runArgs){
-        this.clearRun(true);
         this.run(runArgs.generations, runArgs.populationSize, runArgs.selection, 
             runArgs.mutationRate, runArgs.randomize, runArgs.poolSize);
     }

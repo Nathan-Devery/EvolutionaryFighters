@@ -12,7 +12,7 @@ class FightingRobotCreator{
         const MAX_WIDTH_SCALE = 3;
         const MAX_SPIKE_HEIGHT_SCALE = 3;
         const MAX_WHEEL_SIZE = MAX_HEIGHT/2;
-        const WHEEL_TORQUE = 3;
+        const WHEEL_TORQUE = 2;
         const MIN_WHEEL_SIZE = 20;
 
         var Bodies = Matter.Bodies,
@@ -103,11 +103,16 @@ class FightingRobotCreator{
         Matter.Composite.add(robotComposite, axelA);
         Matter.Composite.add(robotComposite, axelB);
 
+        /*
         let maxWheel = Matter.Bodies.circle(x, y, MAX_WHEEL_SIZE),
             maxTotalMass = maxBodyMass + maxWheel.mass * 2,
-            proportionalTotalMass = (compoundBody.mass + wheelA.mass + wheelB.mass) / maxTotalMass;
+            proportionalTotalMass = (compoundBody.mass + wheelA.mass + wheelB.mass + spike.mass) / maxTotalMass;
 
         var proportionalTorque = WHEEL_TORQUE * proportionalTotalMass;
+        */
+
+        var proportionalTorque = WHEEL_TORQUE * proportionalBodyMass;
+
         if(flip){
             Matter.Composite.scale(robotComposite, -1, 1, {x:x, y:y});
             proportionalTorque = -proportionalTorque
@@ -118,7 +123,18 @@ class FightingRobotCreator{
             //Matter.Body.setAngularVelocity(wheelB, directionWheelVelocity);
 
             wheelA.torque = proportionalTorque;
-            wheelB.torque = proportionalTorque;    
+            wheelB.torque = proportionalTorque;  
+            
+            /*
+            if(!printed){
+                console.log("Mass")
+                console.log("Compound body " + compoundBody.mass);
+                console.log("WheelA Mass " + wheelA.mass);
+                console.log("WheelB Mass " + wheelB.mass);
+                console.log("PROP torque " + proportionalTorque);
+                printed = true;
+            }
+            */
         }
 
         return {

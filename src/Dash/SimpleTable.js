@@ -53,10 +53,10 @@ function SimpleTable(props) {
             <TableBody>
             {rows.map(row => (
                 <TableRow key={row.id}>
-                <TableCell align="right">{row.id}</TableCell>
-                <TableCell align="right">{row.generation}</TableCell>
-                <TableCell align="right">{row.fitness}</TableCell>
-                <TableCell align="right">{row.genome}</TableCell>
+                <TableCell align="left">{row.id}</TableCell>
+                <TableCell align="left">{row.generation}</TableCell>
+                <TableCell align="left">{row.fitness}</TableCell>
+                <TableCell align="left">{row.genome}</TableCell>
                 </TableRow>
             ))}
             </TableBody>
