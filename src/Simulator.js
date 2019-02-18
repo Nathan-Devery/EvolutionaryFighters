@@ -17,7 +17,7 @@ class Simulator{
         this.engine.timing.timeScale = 1;
 
         //* 0.987
-        var windowWidth = window.innerWidth,
+        var windowWidth = window.innerWidth * 1,
             windowHeight = Math.floor(window.innerHeight * 0.66);   //Not 0.66 to avoid scroll down
 
         // create renderer
@@ -27,6 +27,7 @@ class Simulator{
             options: {
                 width: windowWidth,
                 height: windowHeight,
+                
                 //wireframes: false     this must b false to use colours
             }
         });

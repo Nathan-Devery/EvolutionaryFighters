@@ -7,6 +7,7 @@ import RouletteSelector from './RouletteSelector';
 import TournamentSelector from './RouletteSelector';
 import Dashboard from './Dash/Dashboard';
 import ErrorDisplay from './ErrorDisplay';
+import AlertDialog from './Alert';
 
 import Menu from './Menu';
 
@@ -59,14 +60,8 @@ class EvolutionComponent extends Component{
             }
             population = selectionF.selectPopulation(this.state.populations[i], this.state.fitnessScores[i]);
             let offSpring = EvolutionUtilities.crossoverPopulation(population);
-            console.log("offspring");
-            console.log(offSpring);
             offSpring = EvolutionUtilities.mutate(offSpring, mutationRate);
-            console.log("mutated");
-            console.log(offSpring);
             population = offSpring;
-
-            console.log(i);
         }
     }
     
@@ -132,6 +127,7 @@ class EvolutionComponent extends Component{
         }
         return (
             <div>
+                <AlertDialog/>
                 <div id="simulation" style={simStyle}></div>
                 <Dashboard 
                     populations={this.state.populations}
