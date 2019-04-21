@@ -17,7 +17,7 @@ const styles = theme => ({
   },
   table: {
     minWidth: 700,
-  },
+  }
 });
 
 function SimpleTable(props) {

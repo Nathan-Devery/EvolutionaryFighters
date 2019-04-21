@@ -1,9 +1,10 @@
 import Matter from 'matter-js';
+import hacktimer from 'hacktimer';
 
 class Simulator{
     constructor(){
-        this.SLOW_UPDATES_SECOND = 80;
-        this.FAST_UPDATES_SECOND = 500;
+        this.SLOW_UPDATES_SECOND = 60;
+        this.FAST_UPDATES_SECOND = 400;
         this.initialize();
     }
 
@@ -50,13 +51,6 @@ class Simulator{
         }, 1000 / this.updatesPerSecond);
     }
     
-    /*
-    changeSpeed(fast){
-        this.updatesPerSecond = fast ? this.FAST_UPDATES_SECOND : this.SLOW_UPDATES_SECOND;
-        this.run();
-    }
-    */
-
     clear(){
         let engine = this.engine;
         Matter.World.clear(engine.world);

@@ -22,7 +22,7 @@ class Controls extends Component{
             poolSize: 5,
             mutationRate: 5,
             randomize: false,
-            selector: 0,
+            selector: 1,
         }
         this.handleChangeSpeed = this.handleChangeSpeed.bind(this);
         this.handleRun = this.handleRun.bind(this);

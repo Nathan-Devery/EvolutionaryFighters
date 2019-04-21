@@ -30,14 +30,16 @@ class AlertDialog extends React.Component {
           aria-labelledby="alert-dialog-title"
           aria-describedby="alert-dialog-description"
         >
-          <DialogTitle id="alert-dialog-title">{"Evolutionary Fighters - ALPHA 1.0"}</DialogTitle>
+          <DialogTitle id="alert-dialog-title">{"Evolutionary Fighters - ALPHA 1.1"}</DialogTitle>
           <DialogContent>
             <DialogContentText id="alert-dialog-description">
+            <Divider/>
+              <br></br>
               This is a genetic algorithm demo.
               <br></br>
               <br></br>
               Randomly generated fighters are created - each is scored by their sum 'wins'. Darwinism
-              is applied: the fittest breed, the remaining die, and optimas are converged upon. The genome
+              is applied: the fittest breed, the remaining die, optimas are converged upon. The genome
               of everyone is displayed - these thirteen numbers can be pasted and edited into the 'exhibit'
               section, allowing you to view the individual. 
               <br></br>

@@ -12,10 +12,11 @@ class FightingRobotCreator{
 
         const MAX_WIDTH = 170;  
         const MAX_HEIGHT = 170;
-        const MAX_WIDTH_SCALE = 3;
+        const MAX_SPIKE_WIDTH_SCALE = 2;
         const MAX_SPIKE_HEIGHT_SCALE = 3;
-        const MAX_WHEEL_SIZE = MAX_HEIGHT/2;
-        const WHEEL_TORQUE = 2.5;
+        //const MAX_WHEEL_SIZE = MAX_HEIGHT/2;
+        const MAX_WHEEL_SIZE = MAX_HEIGHT/4;
+        const WHEEL_TORQUE = 1.5;
         const MIN_WHEEL_SIZE = 20;
 
         var Bodies = Matter.Bodies,
@@ -37,7 +38,7 @@ class FightingRobotCreator{
         var spike = Bodies.fromVertices(x + width/2 * genome[2], y + height/2 * genome[3], 
             spikeVertices, {label: label});
 
-        Matter.Body.scale(spike, MAX_WIDTH_SCALE * genome[4], MAX_SPIKE_HEIGHT_SCALE * genome[5]);
+        Matter.Body.scale(spike, MAX_SPIKE_WIDTH_SCALE * genome[4], MAX_SPIKE_HEIGHT_SCALE * genome[5]);
 
         var radians = Math.PI * (2 * genome[6]);
         Matter.Body.rotate(spike, radians);
@@ -53,7 +54,7 @@ class FightingRobotCreator{
         let maxSpike = Bodies.fromVertices(x + width/2, y + height/2, spikeVertices),
             maxBody = Matter.Bodies.rectangle(x, y, MAX_WIDTH, MAX_HEIGHT)
         
-        Matter.Body.scale(maxSpike, MAX_WIDTH_SCALE, MAX_SPIKE_HEIGHT_SCALE);
+        Matter.Body.scale(maxSpike, MAX_SPIKE_WIDTH_SCALE, MAX_SPIKE_HEIGHT_SCALE);
 
         let maxBodyMass = maxSpike.mass + maxBody.mass,
             proportionalBodyMass = compoundBody.mass / maxBodyMass;
