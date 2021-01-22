@@ -25,12 +25,7 @@ steps:
     rootFolderOrFile: 'build/**'
     includeRootFolder: true
     archiveType: 'zip'
-    archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
+    archiveFile: 'test.zip'
     replaceExistingArchive: true
 
-- task: PublishBuildArtifacts@1
-  inputs:
-    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-    ArtifactName: '$(Build.BuildId)-sitebuild'
-    publishLocation: 'Container'
 
