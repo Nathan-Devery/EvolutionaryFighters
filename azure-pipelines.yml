@@ -45,4 +45,4 @@ steps:
     azureSubscription: 'Pay-As-You-Go(ff4a518d-b64f-445a-b711-39e56ca9ea07)'
     appType: 'webAppLinux'
     WebAppName: 'evolutionaryfighters'
-    packageForLinux: '$(Build.ArtifactStagingDirectory)/**/*.zip'
+    packageForLinux: $(System.ArtifactsDirectory)/$(Build.BuildId).zip
