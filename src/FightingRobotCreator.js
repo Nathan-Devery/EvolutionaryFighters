@@ -103,7 +103,7 @@ class FightingRobotCreator{
         
         Matter.Composite.add(robotComposite, compoundBody);
         Matter.Composite.add(robotComposite, wheelA);
-        Matter.Composite.add(robotComposite, wheelB);
+        // Matter.Composite.add(robotComposite, wheelB); //two wheels often leads one not being used
         Matter.Composite.add(robotComposite, axelA);
         Matter.Composite.add(robotComposite, axelB);
 
