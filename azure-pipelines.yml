@@ -33,3 +33,16 @@ steps:
     archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
     replaceExistingArchive: true
 
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    ArtifactName: 'static-site'
+    publishLocation: 'Container'
+
+- task: AzureRmWebAppDeployment@4
+  inputs:
+    ConnectionType: 'AzureRM'
+    azureSubscription: 'Pay-As-You-Go(ff4a518d-b64f-445a-b711-39e56ca9ea07)'
+    appType: 'webAppLinux'
+    WebAppName: 'evolutionaryfighters'
+    packageForLinux: '$(System.DefaultWorkingDirectory)/**/*.zip'
