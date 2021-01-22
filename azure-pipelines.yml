@@ -22,7 +22,7 @@ steps:
 
 - task: CopyFiles@2
   inputs:
-    Contents: 'build/**'
+    Contents: '$(System.DefaultWorkingDirectory)/build/**'
     TargetFolder: '$(Build.BinariesDirectory)'
 
 - task: ArchiveFiles@2
