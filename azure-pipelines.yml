@@ -9,6 +9,11 @@ trigger:
 pool:
   vmImage: 'ubuntu-latest'
 
+jobs:
+- job: A
+  steps:
+  - bash: echo "A"
+
 steps:
 - task: NodeTool@0
   inputs:
