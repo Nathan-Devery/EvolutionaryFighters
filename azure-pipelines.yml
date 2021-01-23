@@ -22,8 +22,6 @@ stages:
           npm install
         displayName: 'npm install' 
 
-  - job: test
-    steps:
       - script: | 
           npm test -- --reporters=jest-junit
         displayName: 'run tests, producing junit format'
@@ -35,9 +33,7 @@ stages:
           mergeTestResults: true
           failTaskOnFailedTests: true
           testRunTitle: 'Jest Tests'
-
-  - job: build_package
-    steps:
+          
       - script: |
           npm run build
         displayName: 'npm build'  
