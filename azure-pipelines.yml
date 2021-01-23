@@ -9,9 +9,9 @@ trigger:
 pool:
   vmImage: 'ubuntu-latest'
 stages:
-- stage: build_test
+- stage: build
   jobs:
-  - job: dependancies
+  - job: build-test
     steps:
       - task: NodeTool@0
         inputs:
