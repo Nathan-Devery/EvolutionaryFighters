@@ -27,6 +27,8 @@ class EvolutionUtilities{
     }
 
     static generateIndividual(genomeSize){
+        if(genomeSize <= 0 || genomeSize > 999) throw error("Invalid genome size, must be >0, <1000")
+
         let individual = [];
         for(var i = 0; i < genomeSize; i++){
             let value = Math.random();
