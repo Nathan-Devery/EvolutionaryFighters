@@ -17,8 +17,23 @@ steps:
 
 - script: |
     npm install
+  displayName: 'npm install'  
+
+- script: | 
+    npm test -- --reporters=jest-junit
+  displayName: 'run tests, producing junit format'
+
+- task: PublishTestResults@2
+  inputs:
+    testResultsFormat: 'JUnit'
+    testResultsFiles: '**/junit*.xml'
+    mergeTestResults: true
+    failTaskOnFailedTests: true
+    testRunTitle: 'Jest Tests'
+
+- script: |
     npm run build
-  displayName: 'npm install and build'  
+  displayName: 'npm build'  
 
 - task: CopyFiles@2
   inputs:
@@ -47,4 +62,5 @@ steps:
     WebAppName: 'evolutionaryfighters'
     packageForLinux: $(System.ArtifactsDirectory)/$(Build.BuildId).zip
     StartupCommand: pm2 serve /home/site/wwwroot/b/build/ --no-daemon
+
 
