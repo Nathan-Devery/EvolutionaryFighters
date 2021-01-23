@@ -9,7 +9,7 @@ trigger:
 pool:
   vmImage: 'ubuntu-latest'
 stages:
-- stage: build & test
+- stage: build_test
   jobs:
   - job: dependancies
     steps:
@@ -36,12 +36,12 @@ stages:
           failTaskOnFailedTests: true
           testRunTitle: 'Jest Tests'
 
-  - job: build
+  - job: build_package
     steps:
       - script: |
           npm run build
         displayName: 'npm build'  
-        
+
       - task: CopyFiles@2
         inputs:
           Contents: '$(System.DefaultWorkingDirectory)/build/**'
