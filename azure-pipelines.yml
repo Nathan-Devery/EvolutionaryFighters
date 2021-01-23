@@ -14,6 +14,10 @@ jobs:
   steps:
   - bash: echo "A"
 
+- job: B
+  steps:
+  - bash: echo "B"
+
 steps:
 - task: NodeTool@0
   inputs:
