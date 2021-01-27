@@ -14,7 +14,7 @@ stages:
   - job: build_test
     steps:
       - script: |
-          echo $(test)
+          echo $(notSecret)
         displayName: 'echo stuff' 
       - task: NodeTool@0
         inputs:
