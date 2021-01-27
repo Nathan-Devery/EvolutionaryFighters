@@ -15,7 +15,7 @@ stages:
     steps:
       - script: |
           echo $(test)
-        displayName: 'npm install' 
+        displayName: 'echo stuff' 
       - task: NodeTool@0
         inputs:
           versionSpec: '10.x'
