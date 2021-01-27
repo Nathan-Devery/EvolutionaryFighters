@@ -52,6 +52,7 @@ stages:
 - stage: prod
   jobs:
   - deployment: prod_deployment
+    environment: prod
     strategy:
       runOnce:    #rolling, canary are the other strategies that are supported
         deploy:
