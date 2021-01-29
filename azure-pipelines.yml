@@ -53,12 +53,6 @@ stages:
 
       - task: PublishBuildArtifacts@1
         inputs:
-          PathtoPublish: '$(Build.ArtifactStagingDirectory)/infrastructure/'
-          ArtifactName: 'infrastructure'
-          publishLocation: 'Container'
-
-      - task: PublishBuildArtifacts@1
-        inputs:
           PathtoPublish: '$(Build.ArtifactStagingDirectory)'
           ArtifactName: 'static-site'
           publishLocation: 'Container'
@@ -67,6 +61,7 @@ stages:
   jobs:
   - job: provision_infrastructure
     steps:
+
         - task: AzureResourceManagerTemplateDeployment@3
           inputs:
             deploymentScope: 'Resource Group'
@@ -76,9 +71,9 @@ stages:
             resourceGroupName: 'rg-fighters-prod'
             location: 'Australia Southeast'
             templateLocation: 'Linked artifact'
-            csmFile: '$(Build.ArtifactStagingDirectory)/infrastructure/environment_arm.json'
+            csmFile: '$(System.DefaultWorkingDirectory)/infrastructure/environment_arm.json'
             deploymentMode: 'Incremental'
-      
+
   - deployment: prod_deployment
     environment: prod
     dependsOn: provision_infrastructure
