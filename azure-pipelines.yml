@@ -75,6 +75,7 @@ stages:
       
   - deployment: prod_deployment
     environment: prod
+    dependsOn: provision_infrastructure
     strategy:
       runOnce:    #rolling, canary are the other strategies that are supported
         deploy:
