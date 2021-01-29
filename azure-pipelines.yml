@@ -8,59 +8,72 @@ trigger:
 
 pool:
   vmImage: 'ubuntu-latest'
+stages:
+- stage: build
+  jobs:
+  - job: build_test
+    steps:
+      - script: |
+          echo $(notSecret)
+        displayName: 'echo stuff' 
+      - task: NodeTool@0
+        inputs:
+          versionSpec: '10.x'
+        displayName: 'Install Node.js'
 
-steps:
-- task: NodeTool@0
-  inputs:
-    versionSpec: '10.x'
-  displayName: 'Install Node.js'
+      - script: |
+          npm install
+        displayName: 'npm install' 
 
-- script: |
-    npm install
-  displayName: 'npm install'  
+      - script: | 
+          npm test -- --reporters=jest-junit
+        displayName: 'run tests, producing junit format'
 
-- script: | 
-    npm test -- --reporters=jest-junit
-  displayName: 'run tests, producing junit format'
+      - task: PublishTestResults@2
+        inputs:
+          testResultsFormat: 'JUnit'
+          testResultsFiles: '**/junit*.xml'
+          mergeTestResults: true
+          failTaskOnFailedTests: true
+          testRunTitle: 'Jest Tests'
+          
+      - script: |
+          npm run build
+        displayName: 'npm build'  
 
-- task: PublishTestResults@2
-  inputs:
-    testResultsFormat: 'JUnit'
-    testResultsFiles: '**/junit*.xml'
-    mergeTestResults: true
-    failTaskOnFailedTests: true
-    testRunTitle: 'Jest Tests'
+      - task: CopyFiles@2
+        inputs:
+          Contents: '$(System.DefaultWorkingDirectory)/build/**'
+          TargetFolder: '$(Build.ArtifactStagingDirectory)'
 
-- script: |
-    npm run build
-  displayName: 'npm build'  
-
-- task: CopyFiles@2
-  inputs:
-    Contents: '$(System.DefaultWorkingDirectory)/build/**'
-    TargetFolder: '$(Build.BinariesDirectory)'
-
-- task: ArchiveFiles@2
-  inputs:
-    rootFolderOrFile: '$(Build.BinariesDirectory)'
-    includeRootFolder: true
-    archiveType: 'zip'
-    archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
-    replaceExistingArchive: true
-
-- task: PublishBuildArtifacts@1
-  inputs:
-    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-    ArtifactName: 'static-site'
-    publishLocation: 'Container'
-
-- task: AzureRmWebAppDeployment@4
-  inputs:
-    ConnectionType: 'AzureRM'
-    azureSubscription: 'Pay-As-You-Go(ff4a518d-b64f-445a-b711-39e56ca9ea07)'
-    appType: 'webAppLinux'
-    WebAppName: 'evolutionaryfighters'
-    packageForLinux: $(System.ArtifactsDirectory)/$(Build.BuildId).zip
-    StartupCommand: pm2 serve /home/site/wwwroot/b/build/ --no-daemon
+      - task: PublishBuildArtifacts@1
+        inputs:
+          PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+          ArtifactName: 'static-site'
+          publishLocation: 'Container'
+    
+- stage: prod
+  jobs:
+  - deployment: prod_deployment
+    environment: prod
+    strategy:
+      runOnce:    #rolling, canary are the other strategies that are supported
+        deploy:
+          steps:
+            - task: ArchiveFiles@2
+              inputs:
+                rootFolderOrFile: '$(Build.ArtifactStagingDirectory)'
+                includeRootFolder: true
+                archiveType: 'zip'
+                archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
+                replaceExistingArchive: true
+            - task: AzureRmWebAppDeployment@4
+              inputs:
+                ConnectionType: 'AzureRM'
+                azureSubscription: 'Pay-As-You-Go(ff4a518d-b64f-445a-b711-39e56ca9ea07)'
+                appType: 'webAppLinux'
+                WebAppName: 'evolutionaryfighters'
+                packageForLinux: $(System.ArtifactsDirectory)/$(Build.BuildId).zip
+                StartupCommand: pm2 serve /home/site/wwwroot/b/build/ --no-daemon
 
 
