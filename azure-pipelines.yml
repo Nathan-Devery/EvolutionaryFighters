@@ -76,7 +76,7 @@ stages:
             resourceGroupName: 'rg-fighters-prod'
             location: 'Australia Southeast'
             templateLocation: 'Linked artifact'
-            csmFile: '$(Build.ArtifactStagingDirectory)/environment_arm.json'
+            csmFile: '$(Build.ArtifactStagingDirectory)/infrastructure/environment_arm.json'
             deploymentMode: 'Incremental'
       
   - deployment: prod_deployment
