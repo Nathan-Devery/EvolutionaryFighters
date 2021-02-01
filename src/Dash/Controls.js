@@ -58,8 +58,9 @@ class Controls extends Component{
             
         };
 
-        //my happy change
+        //my coolioChange
         const redundantConst = 10
+        const redundantConst2 = 20
 
         return (
             <div style={style}>
