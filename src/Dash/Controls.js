@@ -50,6 +50,20 @@ class Controls extends Component{
 
     render(){
         //padding avoids window movement when over selection fields 
+        //padding avoids window movement when over selection fields 
+        //padding avoids window movement when over selection fields 
+        //padding avoids window movement when over selection fields 
+        //padding avoids window movement when over selection fields 
+        //padding avoids window movement when over selection fields 
+        //padding avoids window movement when over selection fields 
+        //padding avoids window movement when over selection fields 
+        //padding avoids window movement when over selection fields 
+        //padding avoids window movement when over selection fields 
+        //padding avoids window movement when over selection fields 
+        //padding avoids window movement when over selection fields 
+        //padding avoids window movement when over selection fields 
+        //padding avoids window movement when over selection fields 
+        //padding avoids window movement when over selection fields 
         const style = {
             padding: "10px",
             
