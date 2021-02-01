@@ -46,6 +46,11 @@ stages:
           Contents: '$(System.DefaultWorkingDirectory)/build/**'
           TargetFolder: '$(Build.ArtifactStagingDirectory)'
 
+      - task: CopyFiles@2
+        inputs:
+          Contents: '$(System.DefaultWorkingDirectory)/infrastructure/**'
+          TargetFolder: '$(Build.ArtifactStagingDirectory)'
+
       - task: PublishBuildArtifacts@1
         inputs:
           PathtoPublish: '$(Build.ArtifactStagingDirectory)'
@@ -54,8 +59,24 @@ stages:
     
 - stage: prod
   jobs:
+  - job: provision_infrastructure
+    steps:
+
+        - task: AzureResourceManagerTemplateDeployment@3
+          inputs:
+            deploymentScope: 'Resource Group'
+            azureResourceManagerConnection: 'Pay-As-You-Go(ff4a518d-b64f-445a-b711-39e56ca9ea07)'
+            subscriptionId: 'ff4a518d-b64f-445a-b711-39e56ca9ea07'
+            action: 'Create Or Update Resource Group'
+            resourceGroupName: 'rg-fighters-prod'
+            location: 'Australia Southeast'
+            templateLocation: 'Linked artifact'
+            csmFile: '$(System.DefaultWorkingDirectory)/infrastructure/environment_arm.json'
+            deploymentMode: 'Incremental'
+
   - deployment: prod_deployment
     environment: prod
+    dependsOn: provision_infrastructure
     strategy:
       runOnce:    #rolling, canary are the other strategies that are supported
         deploy:
@@ -65,7 +86,7 @@ stages:
                 rootFolderOrFile: '$(Build.ArtifactStagingDirectory)'
                 includeRootFolder: true
                 archiveType: 'zip'
-                archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
+                archiveFile: 
                 replaceExistingArchive: true
             - task: AzureRmWebAppDeployment@4
               inputs:
