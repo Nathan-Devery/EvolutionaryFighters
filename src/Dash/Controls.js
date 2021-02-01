@@ -52,7 +52,14 @@ class Controls extends Component{
         //padding avoids window movement when over selection fields 
         //test comment
         //another test
-        const style = {
+
+        //HERE IS A BREAKING CHANGE TO MY WORK!
+        // const style = {
+        //     padding: "10px",
+            
+        // };
+        
+        const stylez = {
             padding: "10px",
 
         };
