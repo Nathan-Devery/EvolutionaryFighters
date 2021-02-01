@@ -54,8 +54,11 @@ class Controls extends Component{
         //another test
         const style = {
             padding: "10px",
-            
+
         };
+
+        //my happy change
+        const redundantConst = 10
 
         return (
             <div style={style}>
