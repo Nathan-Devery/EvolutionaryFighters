@@ -53,15 +53,9 @@ class Controls extends Component{
         //test comment
         //another test
 
-        //HERE IS A BREAKING CHANGE TO MY WORK!
-        // const style = {
-        //     padding: "10px",
-            
-        // };
-        
-        const stylez = {
+        const style = {
             padding: "10px",
-
+            
         };
 
         //my happy change
