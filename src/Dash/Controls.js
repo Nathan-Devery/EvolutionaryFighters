@@ -60,6 +60,8 @@ class Controls extends Component{
 
         //my happy change
         const redundantConst = 10
+        //my happy change
+        const random = 20
 
         return (
             <div style={style}>
